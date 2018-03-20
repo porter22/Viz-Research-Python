@@ -18,14 +18,43 @@ def get_pairs(lst):
             result.append([lst[x],lst[y]])
     return result
 
-def make_edge_list(title, pairs):
+def make_edge_list(title, pairs, year):
     for pair in pairs:
         #print pair
         strpair = ','.join(pair)
-        result = title + "," + strpair.lower() + "\n"
-        print result
+        result = year + "," + title + "," + strpair + "\n"
+        print result.encode("utf-8")
         with open("Output.txt", "a") as text_file:
             text_file.write(result)
+
+def make_weight_list(pairs, year):
+    for pair in pairs:
+        #print pair
+        weight = calc_weight(pairs)
+        strpair = ','.join(pair)
+        result = year + "," + title + "," + strpair + "\n"
+        print result.encode("utf-8")
+        with open("Output.txt", "a") as text_file:
+            text_file.write(result)
+
+def pairs_to_lowercase(pairs):
+    resultpairs = []
+    for pair in pairs:
+        pair[0]=pair[0].lower()
+        print pair[0]
+        pair[1]=pair[1].lower()
+        print pair[1]
+        resultpairs.append(pair)
+    return resultpairs
+
+
+def sort_pairs(pairs):
+    sorted_pairs = []
+    for pair in pairs:
+        pair = sorted(pair)
+        print pair
+        sorted_pairs.append(pair)
+    return sorted_pairs
 
 all_keyword_lists = [];
 #print bib_data.entries['Cesar2013'].fields['title']
@@ -33,13 +62,17 @@ for entry_id in bib_data.entries:
     entry = bib_data.entries[entry_id].fields
     try:
         #print entry["keywords"]
+        year = entry["year"]
         keyword_str = entry["keywords"].replace("; ", ",")
         keyword_str = keyword_str.replace(", ", ",")
         keyword_list = keyword_str.split(",")
         print "number of keywords = " + str(len(keyword_list));
         print "number of pairs = %s" % len(get_pairs(keyword_list))
         #give keyword pairs and title for making an edge list
-        make_edge_list(entry_id, get_pairs(keyword_list))
+        pairs = get_pairs(keyword_list)
+        pairs = pairs_to_lowercase(pairs)
+        pairs = sort_pairs(pairs)
+        make_edge_list(entry_id, pairs, year)
         #print entry_id
         all_keyword_lists.append(keyword_list)
     except(KeyError):
